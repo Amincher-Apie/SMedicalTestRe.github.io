@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CD4/CD8 T细胞比值报告单</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e6f7ff, #f0f8ff);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 25px 20px;
+            background: linear-gradient(to right, #1a6ea0, #2a8bc0);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 100, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .report-date {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 100, 0.08);
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 100, 0.15);
+        }
+        
+        .card-title {
+            color: #1a6ea0;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e6f2ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            background: #e6f2ff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a6ea0;
+        }
+        
+        .value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #1a6ea0;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .unit {
+            font-size: 1.2rem;
+            color: #666;
+            margin-left: 5px;
+        }
+        
+        .description {
+            color: #555;
+            font-size: 1.05rem;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .ratio-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 0;
+            background: #f8fbff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e1f0ff;
+        }
+        
+        .ratio-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ff6b6b;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .ratio-label {
+            font-size: 1.2rem;
+            color: #1a6ea0;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .ratio-bar {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin: 0 20px;
+        }
+        
+        .ratio-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border-radius: 10px;
+            width: 65%;
+        }
+        
+        .normal-range {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .normal-range span {
+            color: #1a6ea0;
+            font-weight: 600;
+        }
+        
+        .interpretation {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 100, 0.08);
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .interpretation h2 {
+            color: #1a6ea0;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e6f2ff;
+        }
+        
+        .interpretation p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #444;
+        }
+        
+        .interpretation ul {
+            padding-left: 25px;
+            margin: 20px 0;
+        }
+        
+        .interpretation li {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .interpretation li strong {
+            color: #1a6ea0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column;
+            }
+            
+            .ratio-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .ratio-bar {
+                width: 100%;
+                margin: 20px 0;
+            }
+            
+            .value {
+                font-size: 2.2rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .report-date {
+                position: static;
+                margin-top: 10px;
+                display: inline-block;
+            }
+            
+            .ratio-value {
+                font-size: 2.8rem;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card, .interpretation {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .ratio-container {
+            animation: fadeIn 0.6s ease-out 0.4s forwards;
+            opacity: 0;
+        }
+        
+        .interpretation {
+            animation-delay: 0.6s;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 15px;">
+        <img src="Logo.png" alt="江西康先知生物科技" style="width: 160px; vertical-align: middle;">
+    </div>
+    <div class="container">
+        <header>
+
+            <div class="report-date">
+                <script> const reportDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+                document.querySelector('.report-date').textContent = reportDate;
+                </script>
+            </div>
+            <h1>T细胞亚群分析报告单</h1>
+            <p class="subtitle">CD4<sup>+</sup>与CD8<sup>+</sup>T细胞检测结果及比值分析</p>
+        </header>
+
+        <div class="card-container">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-microscope"></i> CD4<sup>+</sup> T细胞</h2>
+                <div class="value">850 <span class="unit">cells/μL</span></div>
+                <p class="description">辅助性T细胞数量，在免疫应答中起关键作用</p>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-microscope"></i> CD8<sup>+</sup> T细胞</h2>
+                <div class="value">420 <span class="unit">cells/μL</span></div>
+                <p class="description">细胞毒性T细胞数量，负责清除感染细胞</p>
+            </div>
+        </div>
+        
+        <div class="ratio-container">
+            <div>
+                <div class="ratio-value">2.02</div>
+                <div class="ratio-label">CD4/CD8比值</div>
+            </div>
+            
+            <div class="ratio-bar">
+                <div class="ratio-fill"></div>
+            </div>
+            
+            <div>
+                <div class="normal-range">正常参考范围: <span>1.0 - 2.5</span></div>
+            </div>
+        </div>
+        
+        <div class="interpretation">
+            <h2><i class="fas fa-file-medical-alt"></i> 结果解读与临床意义</h2>
+            
+            <p>本次检测结果显示：</p>
+            
+            <ul>
+                <li><strong>CD4<sup>+</sup> T细胞计数</strong>为850 cells/μL（正常范围: 500-1500 cells/μL）</li>
+                <li><strong>CD8<sup>+</sup> T细胞计数</strong>为420 cells/μL（正常范围: 300-1000 cells/μL）</li>
+                <li><strong>CD4/CD8比值</strong>为2.02（正常范围: 1.0-2.5）</li>
+            </ul>
+            
+            <p>检测结果分析：</p>
+            
+            <p>您的CD4<sup>+</sup>和CD8<sup>+</sup>T细胞数量均在正常范围内，CD4/CD8比值为2.02，处于正常参考区间。这表明您的免疫系统细胞亚群分布平衡，免疫功能状态良好。</p>
+            
+            <p>临床意义说明：</p>
+            
+            <p>CD4/CD8比值是评估免疫状态的重要指标：</p>
+            <ul>
+                <li>比值<strong>降低</strong>（<1.0）可能提示病毒感染（如HIV）、某些自身免疫性疾病或免疫抑制状态</li>
+                <li>比值<strong>升高</strong>（>2.5）可见于某些自身免疫性疾病、过敏反应或慢性炎症状态</li>
+                <li>比值在<strong>1.0-2.5</strong>之间通常表示免疫系统处于平衡状态</li>
+            </ul>
+            
+            <p>建议：基于当前检测结果，无需特殊干预，保持健康生活方式即可。建议定期进行免疫状态评估。</p>
+        </div>
+        
+        <div class="footer">
+            <p>本报告仅对本次检测样本负责</p>
+            <p>© 2025 江西康先知生物科技 | 重要提示：本报告需由专业医师结合临床情况进行解读</p>
+        </div>
+    </div>
+</body>
+</html>
